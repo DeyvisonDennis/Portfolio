@@ -1,0 +1,38 @@
+h1{
+	background-color: orange;
+    border: 3px solid red;
+	
+}
+
+img.centro {
+	vertical-align: middle;
+}
+
+p.outline1 {
+	outline-style: dashed;
+	outline-color: orange;
+	background: rgba(240, 153, 40, 0.3);
+}
+p.outline2 {
+    border-style: dotted;
+    border-color: orange;
+	border-width: 5px;
+	background: rgba(240, 153, 40, 0.3);
+}
+
+div{
+	border-style: groove;
+	border-color: orange;
+	background-color: rgba(240, 153, 40, 0.3);
+}
+
+a:https://vacinacovid.butantan.gov.br/{
+  color: green;
+  text-decoration: none;
+}
+
+a:visited {
+  color: green;
+  text-decoration: none;
+}
+

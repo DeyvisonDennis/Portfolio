@@ -1,0 +1,136 @@
+body, ul, li, p {
+	margin: 0px;
+	padding: 0px;
+	list-style: none;
+	font-size: 1.2rem;
+	font-family: Arial;
+}
+
+body{
+	margin-bottom: 100px;
+}
+
+a{
+	text-decoration: none;
+	color: white;
+}
+
+h1 {
+	text-align: center;
+	margin-top: 100px;
+}
+
+.sobremim{
+	
+	float: right;
+}
+
+img {
+	max-width: 100%;
+	display: block;
+}
+
+
+.imagem{
+    transition: all 0.5s;
+    cursor: pointer;
+}
+
+.imagem:hover{
+    -webkit-transform: scale(1.1);
+    transform: scale(1.1);
+}
+
+.positionimagem{
+	margin-block: -10px;
+}
+
+.positionimagem2{
+	margin-left: 10px;
+}
+
+.header {
+	background-color: #1d1e20; 
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 20px; 
+}
+
+.menu {
+	display: flex;
+}
+
+.menu li{
+	margin-left: 10px;
+}
+
+.menu li a{
+	display: block;
+	padding: 10px;
+}
+
+/* CSS FLEXBOX 1 */
+
+.flex {
+	display: flex;
+	flex-wrap: wrap;
+	max-width: 800px;
+	margin: 0 auto;
+}
+
+.flex > div {
+	flex: 1 1 200px;
+	margin: 10px;
+}
+
+/* CSS GRID 2 */
+
+
+.alinhar {
+	margin-inline: 10px;
+	float: left;
+	margin-left: 250px;
+}
+
+.alinhar2{
+	margin-inline-end: 250px;
+	text-align: justify;
+	margin-left: 250px;
+	line-height: 30px;
+}
+
+/* CSS GRID 3 */
+.grid3{
+	display:inline-table;
+	max-width: 100px;
+}
+
+.grid3-item p{
+	background: rgba(0, 0, 0, 0.6);
+	padding: 10px;
+	margin-block-end: 0px;
+	color: white;
+	grid-column: 1;
+	grid-row: 2;
+	align-self: end;
+}
+
+#nome:hover{
+	background: #1d1e20;
+	padding: 10px;
+	color: white;
+	grid-column: 1;
+	grid-row: 2;
+	align-self: end;
+}
+
+#sombra{
+	-webkit-filter: drop-shadow(15px 10px 5px rgba(0,0,0,.5));
+    filter: drop-shadow(15px 10px 5px rgba(0,0,0,.5));
+}
+
+#sombra2{
+	box-shadow: 8px 8px 8px rgba(0, 0, 0, 0.2);
+}
