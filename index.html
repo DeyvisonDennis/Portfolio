@@ -1,0 +1,1423 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Deyvison Dênnis — Full Stack Developer</title>
+  <meta name="description" content="Portfólio de Deyvison Dênnis, Desenvolvedor Full Stack especializado em Java, JavaScript, PHP e desenvolvimento web moderno." />
+  
+  <!-- Fontes Google -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            brand: {
+              dark: '#070a09',
+              card: '#0f1513',
+              border: '#1b2420',
+              accent: '#10b981',
+              accentHover: '#059669',
+              cyan: '#06b6d4',
+              purple: '#8b5cf6',
+            }
+          },
+          animation: {
+            'shine': 'shine 4s ease-in-out infinite',
+            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+          },
+          keyframes: {
+            shine: {
+              '0%': { backgroundPosition: '200% 0' },
+              '100%': { backgroundPosition: '-200% 0' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- React 18 & Babel CDN -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    /* Custom Scrollbar & Utility Classes */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #070a09;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1b2420;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #10b981;
+    }
+    ::selection {
+      background: rgba(16, 185, 129, 0.35);
+      color: #34d399;
+    }
+    .glass-nav {
+      background: rgba(7, 10, 9, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .badge-glow {
+      box-shadow: 0 0 25px rgba(16, 185, 129, 0.25);
+    }
+    .noise-bg {
+      background-image: radial-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 0);
+      background-size: 24px 24px;
+    }
+    .hero-photo-glow {
+      box-shadow: 0 0 50px rgba(16, 185, 129, 0.28);
+    }
+  </style>
+</head>
+<body class="bg-[#070a09] text-slate-200 font-sans antialiased selection:bg-emerald-500/20 selection:text-emerald-400 min-h-screen overflow-x-hidden">
+  
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    // ==========================================
+    // 1. REACTBITS COMPONENT: Particles Background
+    // ==========================================
+    function ParticlesBackground() {
+      const canvasRef = useRef(null);
+
+      useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        let animationFrameId;
+        let mouse = { x: null, y: null, radius: 130 };
+
+        const resize = () => {
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
+        };
+        resize();
+        window.addEventListener('resize', resize);
+
+        const handleMouseMove = (e) => {
+          mouse.x = e.clientX;
+          mouse.y = e.clientY;
+        };
+        const handleMouseLeave = () => {
+          mouse.x = null;
+          mouse.y = null;
+        };
+        window.addEventListener('mousemove', handleMouseMove);
+        window.addEventListener('mouseleave', handleMouseLeave);
+
+        // Criar partículas
+        const particleCount = Math.floor(window.innerWidth > 768 ? 65 : 30);
+        const particles = [];
+        for (let i = 0; i < particleCount; i++) {
+          particles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            size: Math.random() * 2 + 1,
+            speedX: (Math.random() - 0.5) * 0.4,
+            speedY: (Math.random() - 0.5) * 0.4,
+            color: Math.random() > 0.4 ? 'rgba(16, 185, 129, ' : 'rgba(6, 182, 212, ',
+            alpha: Math.random() * 0.5 + 0.25
+          });
+        }
+
+        const render = () => {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+          for (let i = 0; i < particles.length; i++) {
+            const p = particles[i];
+            p.x += p.speedX;
+            p.y += p.speedY;
+
+            if (p.x < 0 || p.x > canvas.width) p.speedX *= -1;
+            if (p.y < 0 || p.y > canvas.height) p.speedY *= -1;
+
+            if (mouse.x !== null) {
+              const dx = mouse.x - p.x;
+              const dy = mouse.y - p.y;
+              const dist = Math.sqrt(dx * dx + dy * dy);
+              if (dist < mouse.radius) {
+                const force = (mouse.radius - dist) / mouse.radius;
+                p.x -= (dx / dist) * force * 1.5;
+                p.y -= (dy / dist) * force * 1.5;
+              }
+            }
+
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            ctx.fillStyle = p.color + p.alpha + ')';
+            ctx.fill();
+
+            for (let j = i + 1; j < particles.length; j++) {
+              const p2 = particles[j];
+              const dx = p.x - p2.x;
+              const dy = p.y - p2.y;
+              const dist = Math.sqrt(dx * dx + dy * dy);
+
+              if (dist < 110) {
+                ctx.beginPath();
+                ctx.moveTo(p.x, p.y);
+                ctx.lineTo(p2.x, p2.y);
+                const lineAlpha = (1 - dist / 110) * 0.16;
+                ctx.strokeStyle = `rgba(16, 185, 129, ${lineAlpha})`;
+                ctx.lineWidth = 0.7;
+                ctx.stroke();
+              }
+            }
+          }
+
+          animationFrameId = requestAnimationFrame(render);
+        };
+
+        render();
+
+        return () => {
+          window.removeEventListener('resize', resize);
+          window.removeEventListener('mousemove', handleMouseMove);
+          window.removeEventListener('mouseleave', handleMouseLeave);
+          cancelAnimationFrame(animationFrameId);
+        };
+      }, []);
+
+      return (
+        <canvas
+          ref={canvasRef}
+          className="fixed inset-0 pointer-events-none z-0 opacity-70"
+        />
+      );
+    }
+
+    // ==========================================
+    // 2. REACTBITS COMPONENT: SplitText
+    // ==========================================
+    function SplitText({ text = "", className = "", delay = 40 }) {
+      const [mounted, setMounted] = useState(false);
+
+      useEffect(() => {
+        setMounted(true);
+      }, []);
+
+      return (
+        <span className={`inline-block overflow-hidden ${className}`}>
+          {text.split('').map((char, index) => (
+            <span
+              key={index}
+              className="inline-block transition-all duration-700 ease-out"
+              style={{
+                opacity: mounted ? 1 : 0,
+                transform: mounted ? 'translateY(0) rotate(0deg)' : 'translateY(100%) rotate(5deg)',
+                transitionDelay: `${index * delay}ms`,
+                display: char === ' ' ? 'inline' : 'inline-block'
+              }}
+            >
+              {char === ' ' ? '\u00A0' : char}
+            </span>
+          ))}
+        </span>
+      );
+    }
+
+    // ==========================================
+    // 3. REACTBITS COMPONENT: BlurText
+    // ==========================================
+    function BlurText({ text = "", className = "", delay = 60, as: Component = "p" }) {
+      const [visible, setVisible] = useState(false);
+      const ref = useRef(null);
+
+      useEffect(() => {
+        const observer = new IntersectionObserver(([entry]) => {
+          if (entry.isIntersecting) {
+            setVisible(true);
+          }
+        }, { threshold: 0.1 });
+
+        if (ref.current) observer.observe(ref.current);
+        return () => observer.disconnect();
+      }, []);
+
+      const words = text.split(" ");
+
+      return (
+        <Component ref={ref} className={`inline-flex flex-wrap gap-x-1.5 ${className}`}>
+          {words.map((word, idx) => (
+            <span
+              key={idx}
+              className="inline-block transition-all duration-700"
+              style={{
+                filter: visible ? 'blur(0px)' : 'blur(10px)',
+                opacity: visible ? 1 : 0,
+                transform: visible ? 'translateY(0)' : 'translateY(12px)',
+                transitionDelay: `${idx * delay}ms`
+              }}
+            >
+              {word}
+            </span>
+          ))}
+        </Component>
+      );
+    }
+
+    // ==========================================
+    // 4. REACTBITS COMPONENT: ShinyText
+    // ==========================================
+    function ShinyText({ text = "", speed = 3, className = "" }) {
+      return (
+        <span
+          className={`inline-block font-medium bg-clip-text text-transparent ${className}`}
+          style={{
+            backgroundImage: 'linear-gradient(120deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 1) 50%, rgba(255, 255, 255, 0.4) 100%)',
+            backgroundSize: '200% 100%',
+            animation: `shine ${speed}s linear infinite`,
+          }}
+        >
+          {text}
+        </span>
+      );
+    }
+
+    // ==========================================
+    // 5. REACTBITS COMPONENT: GradientText
+    // ==========================================
+    function GradientText({ children, className = "", colors = ["#10b981", "#06b6d4", "#a855f7", "#10b981"] }) {
+      return (
+        <span
+          className={`bg-clip-text text-transparent font-bold transition-all duration-500 ${className}`}
+          style={{
+            backgroundImage: `linear-gradient(90deg, ${colors.join(', ')})`,
+            backgroundSize: '300% 100%',
+            animation: 'shine 6s ease infinite',
+          }}
+        >
+          {children}
+        </span>
+      );
+    }
+
+    // ==========================================
+    // 6. REACTBITS COMPONENT: RotatingText
+    // ==========================================
+    function RotatingText({ texts = [], interval = 2500, className = "" }) {
+      const [index, setIndex] = useState(0);
+      const [fade, setFade] = useState(true);
+
+      useEffect(() => {
+        const timer = setInterval(() => {
+          setFade(false);
+          setTimeout(() => {
+            setIndex((prev) => (prev + 1) % texts.length);
+            setFade(true);
+          }, 300);
+        }, interval);
+
+        return () => clearInterval(timer);
+      }, [texts, interval]);
+
+      return (
+        <span
+          className={`inline-block transition-all duration-300 transform ${
+            fade ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-2 scale-95'
+          } ${className}`}
+        >
+          {texts[index]}
+        </span>
+      );
+    }
+
+    // ==========================================
+    // 7. REACTBITS COMPONENT: CountUp
+    // ==========================================
+    function CountUp({ end = 100, duration = 2, prefix = "", suffix = "", className = "" }) {
+      const [count, setCount] = useState(0);
+      const ref = useRef(null);
+      const [hasAnimated, setHasAnimated] = useState(false);
+
+      useEffect(() => {
+        const observer = new IntersectionObserver(([entry]) => {
+          if (entry.isIntersecting && !hasAnimated) {
+            setHasAnimated(true);
+            let startTime = null;
+
+            const step = (timestamp) => {
+              if (!startTime) startTime = timestamp;
+              const progress = Math.min((timestamp - startTime) / (duration * 1000), 1);
+              const currentVal = Math.floor(progress * end);
+              setCount(currentVal);
+
+              if (progress < 1) {
+                requestAnimationFrame(step);
+              } else {
+                setCount(end);
+              }
+            };
+
+            requestAnimationFrame(step);
+          }
+        }, { threshold: 0.2 });
+
+        if (ref.current) observer.observe(ref.current);
+        return () => observer.disconnect();
+      }, [end, duration, hasAnimated]);
+
+      return (
+        <span ref={ref} className={className}>
+          {prefix}{count}{suffix}
+        </span>
+      );
+    }
+
+    // ==========================================
+    // 8. REACTBITS COMPONENT: SpotlightCard
+    // ==========================================
+    function SpotlightCard({ children, className = "", spotlightColor = "rgba(16, 185, 129, 0.15)" }) {
+      const cardRef = useRef(null);
+      const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+      const [isHovered, setIsHovered] = useState(false);
+
+      const handleMouseMove = (e) => {
+        if (!cardRef.current) return;
+        const rect = cardRef.current.getBoundingClientRect();
+        setMousePos({
+          x: e.clientX - rect.left,
+          y: e.clientY - rect.top,
+        });
+      };
+
+      return (
+        <div
+          ref={cardRef}
+          onMouseMove={handleMouseMove}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          className={`relative overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0c1210]/80 backdrop-blur-md transition-all duration-300 hover:border-emerald-500/30 hover:shadow-2xl hover:shadow-emerald-950/30 ${className}`}
+        >
+          {/* Luz do Spotlight seguindo o cursor */}
+          <div
+            className="pointer-events-none absolute -inset-px transition-opacity duration-300"
+            style={{
+              opacity: isHovered ? 1 : 0,
+              background: `radial-gradient(400px circle at ${mousePos.x}px ${mousePos.y}px, ${spotlightColor}, transparent 60%)`,
+            }}
+          />
+          <div className="relative z-10 h-full">{children}</div>
+        </div>
+      );
+    }
+
+    // ==========================================
+    // 9. REACTBITS COMPONENT: Magnet Effect
+    // ==========================================
+    function Magnet({ children, strength = 0.25, className = "" }) {
+      const [position, setPosition] = useState({ x: 0, y: 0 });
+      const ref = useRef(null);
+
+      const handleMouseMove = (e) => {
+        if (!ref.current) return;
+        const { left, top, width, height } = ref.current.getBoundingClientRect();
+        const centerX = left + width / 2;
+        const centerY = top + height / 2;
+        const deltaX = (e.clientX - centerX) * strength;
+        const deltaY = (e.clientY - centerY) * strength;
+        setPosition({ x: deltaX, y: deltaY });
+      };
+
+      const handleMouseLeave = () => {
+        setPosition({ x: 0, y: 0 });
+      };
+
+      return (
+        <div
+          ref={ref}
+          onMouseMove={handleMouseMove}
+          onMouseLeave={handleMouseLeave}
+          className={`inline-block transition-transform duration-200 ease-out ${className}`}
+          style={{ transform: `translate3d(${position.x}px, ${position.y}px, 0)` }}
+        >
+          {children}
+        </div>
+      );
+    }
+
+    // ==========================================
+    // MAIN APP COMPONENT
+    // ==========================================
+    function App() {
+      const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+      const [selectedFilter, setSelectedFilter] = useState('todos');
+
+      const projects = [
+        {
+          title: "Kanban Board Pro",
+          description: "Sistema ágil completo para gerenciamento de fluxo de trabalho estilo Kanban/Trello, com colunas interativas, badges por categoria, métricas de produtividade e interface glassmorphism responsiva.",
+          tags: ["React", "JavaScript", "Tailwind CSS", "UI/UX"],
+          category: "frontend",
+          github: "https://github.com/DeyvisonDennis/kanban-board",
+          featured: true,
+          metrics: "Fluxo Ágil & Drag-drop"
+        },
+        {
+          title: "Minha Festa",
+          description: "Plataforma web colaborativa para gestão e planejamento de eventos, controle orçamentário de custos, lista de convidados e cronograma de celebrações.",
+          tags: ["TypeScript", "React", "Frontend", "State"],
+          category: "fullstack",
+          github: "https://github.com/DeyvisonDennis/minha-festa",
+          featured: true,
+          metrics: "Organizador de Eventos"
+        },
+        {
+          title: "Sistema Compare Já",
+          description: "Software comparador de produtos e preços desenvolvido no CEFET-MG para o Trabalho de Conclusão de Curso (TCC). Foco em integridade de dados relacionais e regras de negócio sólidas.",
+          tags: ["Java", "MySQL", "Desktop/Web", "TCC CEFET"],
+          category: "backend",
+          github: "https://github.com/DeyvisonDennis/SistemaCompareJa_TCC-Luan-Deyvison",
+          featured: true,
+          metrics: "TCC CEFET-MG"
+        },
+        {
+          title: "Projeto Aurora",
+          description: "Projeto experimental explorando interfaces dinâmicas, animações visuais fluidas e integração de scripts utilitários em Python e JavaScript.",
+          tags: ["Python", "JavaScript", "CSS3", "Design"],
+          category: "frontend",
+          github: "https://github.com/DeyvisonDennis/projeto_aurora",
+          featured: false,
+          metrics: "Exploração Criativa"
+        },
+        {
+          title: "Atividade Web 2 — API Integration",
+          description: "Aplicação focada em desenvolvimento web avançado, boas práticas de semântica HTML5, estilização moderna e consumo de recursos assíncronos.",
+          tags: ["HTML5", "CSS3", "JavaScript ES6+", "APIs"],
+          category: "frontend",
+          github: "https://github.com/DeyvisonDennis/atividade-web2",
+          featured: false,
+          metrics: "Acadêmico"
+        },
+        {
+          title: "E-commerce Frontends & Templates",
+          description: "Projetos de customização de lojas virtuais e landing pages de conversão desenvolvidos com foco em performance e renderização ágil na aceleradora de e-commerce WeetHub.",
+          tags: ["PHP Twig", "Bootstrap", "SASS", "Git"],
+          category: "fullstack",
+          github: "https://github.com/DeyvisonDennis",
+          featured: false,
+          metrics: "Experiência Real WeetHub"
+        }
+      ];
+
+      const skills = [
+        { name: "JavaScript (ES6+)", category: "Linguagem", level: "Avançado", icon: "⚡" },
+        { name: "Java", category: "Backend", level: "Intermediário", icon: "☕" },
+        { name: "React & Componentes", category: "Frontend", level: "Intermediário", icon: "⚛️" },
+        { name: "PHP & Twig", category: "Full Stack", level: "Intermediário", icon: "🐘" },
+        { name: "HTML5 & CSS3 / SASS", category: "Frontend", level: "Avançado", icon: "🎨" },
+        { name: "Bootstrap & Tailwind", category: "Frameworks CSS", level: "Avançado", icon: "📐" },
+        { name: "Git & GitHub", category: "DevOps", level: "Avançado", icon: "🐙" },
+        { name: "Banco de Dados (SQL)", category: "Dados", level: "Intermediário", icon: "🗄️" },
+        { name: "Scrum & Metodologias Ágeis", category: "Gestão", level: "Aplicado", icon: "🔄" },
+        { name: "Helpdesk & Resolução", category: "Suporte", level: "Especialista", icon: "🛠️" },
+      ];
+
+      const experiences = [
+        {
+          period: "Fev 2026 — Presente",
+          role: "Analista de Helpdesk (Trainee)",
+          company: "WMI - Wellness Management Innovation",
+          location: "Divinópolis, MG (Presencial)",
+          description: "Atuação no diagnóstico avançado, monitoramento de sistemas de gestão, suporte técnico preventivo e corretivo e comunicação com equipes de engenharia e banco de dados.",
+          badges: ["Atendimento ao Cliente", "Banco de Dados", "Resolução de Incidentes", "SLA"]
+        },
+        {
+          period: "Mai 2025 — Fev 2026",
+          role: "Suporte Técnico (Estágio)",
+          company: "WMI - Wellness Management Innovation",
+          location: "Divinópolis, MG",
+          description: "Acompanhamento da rotina de tickets de clientes, identificação de falhas em regras de negócio, testes de usabilidade e auxílio na documentação técnica de processos internos.",
+          badges: ["Suporte ao Cliente", "Qualidade", "Análise de Logs"]
+        },
+        {
+          period: "Dez 2024 — Mai 2025",
+          role: "Suporte Operacional (Aprendiz)",
+          company: "WMI - Wellness Management Innovation",
+          location: "Divinópolis, MG",
+          description: "Início da trajetória na WMI, desenvolvendo soft skills essenciais como comunicação assertiva, didática com o usuário final e produtividade no ambiente corporativo.",
+          badges: ["Comunicação", "Produtividade", "Organização"]
+        },
+        {
+          period: "Abr 2022 — Jun 2024 (2 anos e 3 meses)",
+          role: "Desenvolvedor Júnior",
+          company: "WeetHub — Assessoria e Gestão para E-commerce",
+          location: "Divinópolis, MG",
+          description: "Desenvolvimento e customização de temas para plataformas de e-commerce. Criação de layouts responsivos, scripts interativos em JavaScript, templates com PHP Twig, estilização com SASS/Bootstrap e versionamento contínuo em Git.",
+          badges: ["JavaScript", "HTML/CSS/SASS", "Bootstrap", "PHP Twig", "Git/GitHub", "E-commerce"]
+        }
+      ];
+
+      const certifications = [
+        { title: "Inglês 1", issuer: "Instituto Federal do Rio Grande do Sul (IFRS)", date: "Jan 2026", icon: "🌍" },
+        { title: "Java Básico", issuer: "loiane.training", date: "Mai 2025", icon: "☕" },
+        { title: "JavaScript: Conhecendo Arrays", issuer: "WMI - Wellness Management Innovation", date: "Mar 2025", icon: "📜" },
+        { title: "Lógica de Programação: Funções e Listas", issuer: "WMI", date: "Fev 2025", icon: "🧠" },
+        { title: "JavaScript: Tipos, Variáveis e Funções", issuer: "WMI", date: "Fev 2025", icon: "💻" },
+        { title: "JavaScript: Explorando a Linguagem", issuer: "WMI", date: "Jan 2025", icon: "🚀" },
+      ];
+
+      const filteredProjects = selectedFilter === 'todos' 
+        ? projects 
+        : projects.filter(p => p.category === selectedFilter);
+
+      return (
+        <div className="relative z-10 noise-bg min-h-screen">
+          <ParticlesBackground />
+
+          {/* ==========================================
+              NAVBAR
+          ========================================== */}
+          <header className="fixed top-0 left-0 right-0 z-50 glass-nav transition-all duration-300">
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between">
+              
+              {/* Logo / Nome com Foto Pequena */}
+              <a href="#hero" className="flex items-center gap-3 group">
+                <div className="w-10 h-10 rounded-full ring-2 ring-emerald-500/60 overflow-hidden group-hover:scale-105 transition-transform bg-[#070a09]">
+                  <img src="./profile.png" alt="Deyvison Dênnis" className="w-full h-full object-cover" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="font-bold text-white tracking-tight flex items-center gap-1.5 text-base sm:text-lg">
+                    Deyvison Dênnis
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                  </span>
+                  <span className="text-xs text-slate-400 font-mono">Full Stack Developer</span>
+                </div>
+              </a>
+
+              {/* Desktop Menu */}
+              <nav className="hidden md:flex items-center gap-1 bg-[#0c1210]/90 border border-white/[0.08] px-3 py-1.5 rounded-full text-sm">
+                <a href="#sobre" className="px-3.5 py-1.5 text-slate-300 hover:text-emerald-400 transition-colors rounded-full hover:bg-white/[0.04]">Sobre</a>
+                <a href="#experiencia" className="px-3.5 py-1.5 text-slate-300 hover:text-emerald-400 transition-colors rounded-full hover:bg-white/[0.04]">Experiência</a>
+                <a href="#skills" className="px-3.5 py-1.5 text-slate-300 hover:text-emerald-400 transition-colors rounded-full hover:bg-white/[0.04]">Skills</a>
+                <a href="#projetos" className="px-3.5 py-1.5 text-slate-300 hover:text-emerald-400 transition-colors rounded-full hover:bg-white/[0.04]">Projetos</a>
+                <a href="#formacao" className="px-3.5 py-1.5 text-slate-300 hover:text-emerald-400 transition-colors rounded-full hover:bg-white/[0.04]">Formação</a>
+                <a href="#componentes-reactbits" className="px-3 py-1.5 text-cyan-400 font-medium hover:text-cyan-300 transition-colors rounded-full hover:bg-cyan-950/30">ReactBits ✨</a>
+              </nav>
+
+              {/* Ação Direta / Contato */}
+              <div className="hidden md:flex items-center gap-3">
+                <Magnet strength={0.3}>
+                  <a
+                    href="https://github.com/DeyvisonDennis"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="p-2.5 rounded-xl border border-white/[0.1] bg-white/[0.03] text-slate-300 hover:text-white hover:border-emerald-500/50 transition-all flex items-center justify-center"
+                    title="GitHub"
+                  >
+                    <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                  </a>
+                </Magnet>
+                <Magnet strength={0.3}>
+                  <a
+                    href="https://www.linkedin.com/in/deyvison-d%C3%AAnnis-764a0420b/"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="p-2.5 rounded-xl border border-white/[0.1] bg-white/[0.03] text-slate-300 hover:text-white hover:border-cyan-500/50 transition-all flex items-center justify-center"
+                    title="LinkedIn"
+                  >
+                    <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                  </a>
+                </Magnet>
+                <Magnet strength={0.2}>
+                  <a
+                    href="#contato"
+                    className="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold text-sm transition-all shadow-lg shadow-emerald-500/20"
+                  >
+                    Fale Comigo
+                  </a>
+                </Magnet>
+              </div>
+
+              {/* Botão Mobile */}
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="md:hidden p-2 rounded-lg bg-white/[0.05] border border-white/[0.1] text-slate-300"
+              >
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  {mobileMenuOpen ? (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  ) : (
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  )}
+                </svg>
+              </button>
+
+            </div>
+
+            {/* Mobile Dropdown */}
+            {mobileMenuOpen && (
+              <div className="md:hidden border-t border-white/[0.08] bg-[#070a09]/95 px-6 py-4 flex flex-col gap-3 text-base">
+                <a href="#sobre" onClick={() => setMobileMenuOpen(false)} className="py-2 text-slate-300 hover:text-emerald-400">Sobre Mim</a>
+                <a href="#experiencia" onClick={() => setMobileMenuOpen(false)} className="py-2 text-slate-300 hover:text-emerald-400">Experiência</a>
+                <a href="#skills" onClick={() => setMobileMenuOpen(false)} className="py-2 text-slate-300 hover:text-emerald-400">Skills</a>
+                <a href="#projetos" onClick={() => setMobileMenuOpen(false)} className="py-2 text-slate-300 hover:text-emerald-400">Projetos</a>
+                <a href="#formacao" onClick={() => setMobileMenuOpen(false)} className="py-2 text-slate-300 hover:text-emerald-400">Formação</a>
+                <a href="#componentes-reactbits" onClick={() => setMobileMenuOpen(false)} className="py-2 text-cyan-400 font-semibold">Componentes ReactBits</a>
+                <a href="#contato" onClick={() => setMobileMenuOpen(false)} className="mt-2 text-center py-2.5 rounded-xl bg-emerald-500 text-slate-950 font-bold">Entrar em Contato</a>
+              </div>
+            )}
+          </header>
+
+          {/* ==========================================
+              HERO SECTION COM FOTO DO DEYVISON
+          ========================================== */}
+          <section id="hero" className="relative pt-28 sm:pt-36 pb-20 md:pb-28 px-4 sm:px-6 max-w-6xl mx-auto flex flex-col items-center text-center">
+            
+            {/* Foto de Apresentação com Efeito Glow */}
+            <div className="relative mb-6 group">
+              <div className="absolute -inset-1.5 rounded-full bg-gradient-to-r from-emerald-500 via-cyan-500 to-emerald-400 opacity-80 blur-md group-hover:opacity-100 transition duration-500 group-hover:scale-105"></div>
+              <div className="relative w-32 h-32 sm:w-40 sm:h-40 rounded-full p-1 bg-[#070a09] ring-2 ring-emerald-400/80 overflow-hidden hero-photo-glow">
+                <img
+                  src="./profile.png"
+                  alt="Deyvison Dênnis"
+                  className="w-full h-full object-cover rounded-full group-hover:scale-105 transition-transform duration-500"
+                />
+              </div>
+              <div className="absolute bottom-1 right-2 w-5 h-5 bg-emerald-400 border-2 border-[#070a09] rounded-full shadow-lg" title="Disponível para oportunidades"></div>
+            </div>
+
+            {/* Badge de Disponibilidade com ShinyText */}
+            <div className="mb-6 inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full border border-emerald-500/40 bg-emerald-950/40 badge-glow">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+              <ShinyText text="✨ Disponível para novos desafios e projetos" speed={3} className="text-xs sm:text-sm font-semibold text-emerald-300" />
+            </div>
+
+            {/* Nome com SplitText — Alto Contraste, Nitidez Total e Brilho */}
+            <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-white mb-4">
+              Olá, me chamo <br className="hidden sm:inline" />
+              <span className="inline-block text-emerald-400 drop-shadow-[0_0_35px_rgba(16,185,129,0.45)] font-black">
+                <SplitText text="Deyvison Dênnis" delay={45} />
+              </span>
+            </h1>
+
+            {/* Rotator de Papéis com RotatingText */}
+            <div className="flex flex-wrap items-center justify-center gap-2 text-xl sm:text-2xl md:text-3xl text-slate-300 font-medium my-3">
+              <span>Eu construo soluções como</span>
+              <span className="px-3 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 font-mono font-semibold">
+                <RotatingText
+                  texts={[
+                    "Full Stack Developer",
+                    "Java & JavaScript Dev",
+                    "PHP & Twig Specialist",
+                    "Bacharel em Sistemas (Anhanguera)",
+                    "Técnico em Informática (CEFET-MG)"
+                  ]}
+                  interval={2600}
+                />
+              </span>
+            </div>
+
+            {/* Subtítulo com BlurText */}
+            <div className="max-w-2xl mt-4 mb-8 text-slate-300 text-base sm:text-lg leading-relaxed">
+              <BlurText
+                text="Desenvolvedor com experiência sólida em aplicações web, sistemas empresariais e e-commerce. Unindo lógica eficiente no backend e interfaces modernas no frontend."
+                delay={35}
+              />
+            </div>
+
+            {/* Botões CTA com Efeito Magnético */}
+            <div className="flex flex-wrap items-center justify-center gap-4">
+              <Magnet strength={0.25}>
+                <a
+                  href="#projetos"
+                  className="px-6 py-3.5 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-400 hover:from-emerald-400 hover:to-emerald-300 text-slate-950 font-bold text-sm sm:text-base transition-all shadow-xl shadow-emerald-500/20 flex items-center gap-2"
+                >
+                  <span>Explorar Projetos</span>
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+                </a>
+              </Magnet>
+
+              <Magnet strength={0.25}>
+                <a
+                  href="#componentes-reactbits"
+                  className="px-6 py-3.5 rounded-xl border border-white/[0.15] bg-[#0c1210]/70 hover:bg-white/[0.08] text-white font-semibold text-sm sm:text-base transition-all flex items-center gap-2"
+                >
+                  <span className="text-cyan-400">Ver Componentes ReactBits</span>
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-cyan-950 border border-cyan-800 text-cyan-300">8 ativos</span>
+                </a>
+              </Magnet>
+            </div>
+
+            {/* Localização e Conexão Rápida */}
+            <div className="mt-12 flex flex-wrap items-center justify-center gap-6 text-xs sm:text-sm text-slate-400 font-mono">
+              <span className="flex items-center gap-1.5">
+                <span className="text-emerald-400">📍</span> Divinópolis, Minas Gerais
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="text-cyan-400">🏢</span> WMI - Wellness Management Innovation
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="text-purple-400">🎓</span> Anhanguera & CEFET-MG
+              </span>
+            </div>
+
+          </section>
+
+          {/* ==========================================
+              ESTATÍSTICAS COM COUNTUP
+          ========================================== */}
+          <section className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              
+              <SpotlightCard className="p-6 text-center">
+                <div className="text-3xl sm:text-4xl font-extrabold text-emerald-400 font-mono">
+                  <CountUp end={4} suffix="+" duration={1.5} />
+                </div>
+                <p className="text-xs sm:text-sm text-slate-400 mt-1 font-medium">Anos de Formação & Código</p>
+              </SpotlightCard>
+
+              <SpotlightCard className="p-6 text-center">
+                <div className="text-3xl sm:text-4xl font-extrabold text-cyan-400 font-mono">
+                  <CountUp end={9} suffix="+" duration={1.8} />
+                </div>
+                <p className="text-xs sm:text-sm text-slate-400 mt-1 font-medium">Repositórios no GitHub</p>
+              </SpotlightCard>
+
+              <SpotlightCard className="p-6 text-center">
+                <div className="text-3xl sm:text-4xl font-extrabold text-purple-400 font-mono">
+                  <CountUp end={6} suffix="+" duration={2} />
+                </div>
+                <p className="text-xs sm:text-sm text-slate-400 mt-1 font-medium">Certificações Técnicas</p>
+              </SpotlightCard>
+
+              <SpotlightCard className="p-6 text-center">
+                <div className="text-3xl sm:text-4xl font-extrabold text-emerald-400 font-mono">
+                  <CountUp end={100} suffix="%" duration={2.2} />
+                </div>
+                <p className="text-xs sm:text-sm text-slate-400 mt-1 font-medium">Comprometimento & Foco</p>
+              </SpotlightCard>
+
+            </div>
+          </section>
+
+          {/* ==========================================
+              SOBRE MIM & HARD/SOFT SKILLS
+          ========================================== */}
+          <section id="sobre" className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
+            
+            <div className="text-center mb-12">
+              <span className="text-xs uppercase tracking-widest text-emerald-400 font-mono font-semibold">Trajetória & Filosofia</span>
+              <h2 className="text-3xl sm:text-4xl font-extrabold text-white mt-2">
+                <GradientText colors={["#ffffff", "#cbd5e1", "#10b981"]}>Sobre Mim</GradientText>
+              </h2>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+              
+              {/* Bio Principal */}
+              <div className="lg:col-span-7 space-y-5 text-slate-300 text-base leading-relaxed">
+                <SpotlightCard className="p-8">
+                  <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                    <span className="text-emerald-400">👋</span> Olá! É um prazer te receber por aqui.
+                  </h3>
+                  <p className="text-slate-300 mb-4">
+                    Sou apaixonado por construir software confiável, seguro e que solucione gargalos reais do dia a dia. Minha jornada combina formação técnica de excelência no <strong className="text-white">CEFET-MG</strong> com a graduação em <strong className="text-white">Sistemas de Informação na Anhanguera Educacional</strong>.
+                  </p>
+                  <p className="text-slate-300 mb-4">
+                    Ao longo da minha carreira, atuei em ritmo intenso na aceleradora de e-commerce <strong className="text-white">WeetHub</strong> durante mais de 2 anos, customizando soluções completas com JavaScript, PHP Twig, estilização SASS/Bootstrap e versionamento Git.
+                  </p>
+                  <p className="text-slate-300">
+                    Atualmente na <strong className="text-white">WMI (Wellness Management Innovation)</strong>, atuo na análise de suporte técnico, diagnóstico em banco de dados e atendimento consultivo, garantindo alta disponibilidade e satisfação dos usuários.
+                  </p>
+                </SpotlightCard>
+
+                {/* Soft Skills Card */}
+                <SpotlightCard className="p-6">
+                  <h4 className="text-sm font-bold uppercase tracking-wider text-emerald-400 font-mono mb-4">
+                    Habilidades Comportamentais (Soft Skills)
+                  </h4>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    {[
+                      { icon: "⚡", title: "Produtividade", desc: "Entrega contínua" },
+                      { icon: "💬", title: "Comunicação", desc: "Clara e assertiva" },
+                      { icon: "📚", title: "Didática", desc: "Compartilhar saber" },
+                      { icon: "🤝", title: "Trabalho em Equipe", desc: "Colaboração diária" },
+                      { icon: "🔍", title: "Pensamento Crítico", desc: "Análise profunda" },
+                      { icon: "🧩", title: "Resolução", desc: "Solução de problemas" },
+                    ].map((item, idx) => (
+                      <div key={idx} className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.05] hover:border-emerald-500/20 transition-colors">
+                        <div className="text-xl mb-1">{item.icon}</div>
+                        <div className="text-sm font-semibold text-white">{item.title}</div>
+                        <div className="text-xs text-slate-400">{item.desc}</div>
+                      </div>
+                    ))}
+                  </div>
+                </SpotlightCard>
+              </div>
+
+              {/* Card Perfil com Foto Real */}
+              <div className="lg:col-span-5 space-y-6">
+                <SpotlightCard className="p-6 border-emerald-500/20">
+                  <div className="flex items-center gap-4 mb-6">
+                    <div className="w-20 h-20 rounded-2xl p-0.5 bg-gradient-to-tr from-emerald-500 to-cyan-500">
+                      <img
+                        src="./profile.png"
+                        alt="Deyvison Dênnis"
+                        className="w-full h-full object-cover rounded-2xl"
+                      />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-white">Deyvison Dênnis</h3>
+                      <p className="text-xs text-emerald-400 font-mono mt-0.5">Desenvolvedor Full Stack</p>
+                      <p className="text-xs text-slate-400 mt-1">Divinópolis - MG, Brasil</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3 border-t border-white/[0.06] pt-4 text-sm">
+                    <div className="flex justify-between items-center py-1">
+                      <span className="text-slate-400">Atuação atual:</span>
+                      <span className="text-white font-medium">Analista WMI</span>
+                    </div>
+                    <div className="flex justify-between items-center py-1">
+                      <span className="text-slate-400">Formação:</span>
+                      <span className="text-white font-medium">Sistemas de Informação</span>
+                    </div>
+                    <div className="flex justify-between items-center py-1">
+                      <span className="text-slate-400">Metodologias:</span>
+                      <span className="text-emerald-400 font-mono text-xs">Scrum / Ágil</span>
+                    </div>
+                    <div className="flex justify-between items-center py-1">
+                      <span className="text-slate-400">Status:</span>
+                      <span className="px-2 py-0.5 rounded-full text-xs bg-emerald-950 text-emerald-300 border border-emerald-800">
+                        Ativo & Disponível
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 pt-4 border-t border-white/[0.06] flex gap-2">
+                    <a
+                      href="https://www.linkedin.com/in/deyvison-d%C3%AAnnis-764a0420b/"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex-1 py-2.5 rounded-xl bg-[#0a66c2]/20 hover:bg-[#0a66c2]/30 border border-[#0a66c2]/40 text-blue-300 text-xs font-semibold text-center transition-all flex items-center justify-center gap-1.5"
+                    >
+                      <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                      Ver no LinkedIn
+                    </a>
+                    <a
+                      href="https://github.com/DeyvisonDennis"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex-1 py-2.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.08] border border-white/[0.1] text-white text-xs font-semibold text-center transition-all flex items-center justify-center gap-1.5"
+                    >
+                      <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                      Ver no GitHub
+                    </a>
+                  </div>
+                </SpotlightCard>
+              </div>
+
+            </div>
+
+          </section>
+
+          {/* ==========================================
+              EXPERIÊNCIA PROFISSIONAL (BENTO TIMELINE)
+          ========================================== */}
+          <section id="experiencia" className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
+            
+            <div className="text-center mb-16">
+              <span className="text-xs uppercase tracking-widest text-emerald-400 font-mono font-semibold">Carreira & Atuação</span>
+              <h2 className="text-3xl sm:text-4xl font-extrabold text-white mt-2">
+                <GradientText colors={["#ffffff", "#10b981", "#06b6d4"]}>Experiência Profissional</GradientText>
+              </h2>
+              <p className="text-slate-400 text-sm max-w-xl mx-auto mt-2">
+                Histórico de contribuições técnicas em sistemas web, e-commerce e suporte corporativo.
+              </p>
+            </div>
+
+            <div className="relative border-l border-emerald-500/30 ml-4 sm:ml-8 md:ml-12 pl-6 sm:pl-10 space-y-12">
+              {experiences.map((exp, idx) => (
+                <div key={idx} className="relative group">
+                  
+                  {/* Ponto na timeline */}
+                  <div className="absolute -left-[31px] sm:-left-[47px] top-1.5 w-5 h-5 rounded-full bg-[#070a09] border-2 border-emerald-400 group-hover:scale-125 transition-transform flex items-center justify-center">
+                    <div className="w-2 h-2 rounded-full bg-emerald-400"></div>
+                  </div>
+
+                  <SpotlightCard className="p-6 sm:p-8">
+                    <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+                      <div>
+                        <h3 className="text-xl font-bold text-white group-hover:text-emerald-400 transition-colors">
+                          {exp.role}
+                        </h3>
+                        <p className="text-sm font-semibold text-emerald-300 flex items-center gap-2 mt-0.5">
+                          <span>{exp.company}</span>
+                          <span className="text-slate-600">•</span>
+                          <span className="text-xs text-slate-400 font-normal">{exp.location}</span>
+                        </p>
+                      </div>
+                      <span className="text-xs font-mono font-semibold px-3 py-1 rounded-full bg-emerald-950/80 border border-emerald-800/80 text-emerald-300">
+                        {exp.period}
+                      </span>
+                    </div>
+
+                    <p className="text-slate-300 text-sm sm:text-base leading-relaxed mb-4">
+                      {exp.description}
+                    </p>
+
+                    <div className="flex flex-wrap gap-2 pt-2 border-t border-white/[0.04]">
+                      {exp.badges.map((badge, bIdx) => (
+                        <span key={bIdx} className="text-xs px-2.5 py-1 rounded-md bg-white/[0.04] text-slate-300 border border-white/[0.06]">
+                          {badge}
+                        </span>
+                      ))}
+                    </div>
+                  </SpotlightCard>
+                </div>
+              ))}
+            </div>
+
+          </section>
+
+          {/* ==========================================
+              TECH STACK & COMPETÊNCIAS
+          ========================================== */}
+          <section id="skills" className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
+            
+            <div className="text-center mb-16">
+              <span className="text-xs uppercase tracking-widest text-cyan-400 font-mono font-semibold">Tecnologias & Ferramentas</span>
+              <h2 className="text-3xl sm:text-4xl font-extrabold text-white mt-2">
+                <GradientText colors={["#06b6d4", "#10b981", "#38bdf8"]}>Tech Stack & Hard Skills</GradientText>
+              </h2>
+              <p className="text-slate-400 text-sm max-w-xl mx-auto mt-2">
+                Ferramentas dominadas na prática em projetos reais e formações de alta carga horária.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+              {skills.map((skill, idx) => (
+                <SpotlightCard key={idx} className="p-5 flex flex-col justify-between text-center group hover:scale-[1.02] transition-transform">
+                  <div className="text-3xl mb-3 group-hover:scale-110 transition-transform">{skill.icon}</div>
+                  <div>
+                    <h3 className="text-sm font-bold text-white group-hover:text-emerald-400 transition-colors">
+                      {skill.name}
+                    </h3>
+                    <p className="text-xs text-slate-400 mt-1 font-mono">{skill.category}</p>
+                  </div>
+                  <div className="mt-3 pt-2 border-t border-white/[0.04]">
+                    <span className="text-[11px] font-mono text-emerald-400 font-semibold px-2 py-0.5 rounded bg-emerald-950/60">
+                      {skill.level}
+                    </span>
+                  </div>
+                </SpotlightCard>
+              ))}
+            </div>
+
+          </section>
+
+          {/* ==========================================
+              PROJETOS EM DESTAQUE (GITHUB)
+          ========================================== */}
+          <section id="projetos" className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
+            
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-12">
+              <div>
+                <span className="text-xs uppercase tracking-widest text-emerald-400 font-mono font-semibold">Portfólio de Código</span>
+                <h2 className="text-3xl sm:text-4xl font-extrabold text-white mt-1">
+                  <GradientText colors={["#ffffff", "#10b981", "#06b6d4"]}>Projetos Selecionados</GradientText>
+                </h2>
+              </div>
+
+              {/* Filtros de Categoria */}
+              <div className="flex items-center gap-1.5 p-1 rounded-xl bg-white/[0.03] border border-white/[0.08] text-xs">
+                {['todos', 'frontend', 'backend', 'fullstack'].map((filter) => (
+                  <button
+                    key={filter}
+                    onClick={() => setSelectedFilter(filter)}
+                    className={`px-3 py-1.5 rounded-lg font-medium transition-all capitalize ${
+                      selectedFilter === filter
+                        ? 'bg-emerald-500 text-slate-950 font-bold shadow'
+                        : 'text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    {filter}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredProjects.map((proj, idx) => (
+                <SpotlightCard key={idx} className="p-6 flex flex-col justify-between group">
+                  <div>
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-md bg-emerald-950/70 border border-emerald-800/60 text-emerald-300">
+                        {proj.metrics}
+                      </span>
+                      <a
+                        href={proj.github}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-slate-400 hover:text-white transition-colors p-1"
+                        title="Abrir no GitHub"
+                      >
+                        <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                      </a>
+                    </div>
+
+                    <h3 className="text-xl font-bold text-white group-hover:text-emerald-400 transition-colors mb-2">
+                      {proj.title}
+                    </h3>
+
+                    <p className="text-slate-300 text-sm leading-relaxed mb-6">
+                      {proj.description}
+                    </p>
+                  </div>
+
+                  <div>
+                    <div className="flex flex-wrap gap-1.5 mb-5">
+                      {proj.tags.map((tag, tIdx) => (
+                        <span key={tIdx} className="text-[11px] font-mono px-2 py-0.5 rounded bg-white/[0.04] text-slate-300 border border-white/[0.06]">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+
+                    <a
+                      href={proj.github}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="w-full py-2.5 rounded-xl border border-emerald-500/30 hover:border-emerald-400 bg-emerald-950/20 hover:bg-emerald-500/20 text-emerald-300 text-xs font-semibold text-center transition-all flex items-center justify-center gap-2 group-hover:shadow-lg group-hover:shadow-emerald-950/50"
+                    >
+                      <span>Acessar Código Fonte</span>
+                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                    </a>
+                  </div>
+                </SpotlightCard>
+              ))}
+            </div>
+
+            <div className="mt-10 text-center">
+              <a
+                href="https://github.com/DeyvisonDennis?tab=repositories"
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.08] text-sm text-slate-300 hover:text-white transition-all"
+              >
+                <span>Ver todos os repositórios no GitHub</span>
+                <svg className="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+              </a>
+            </div>
+
+          </section>
+
+          {/* ==========================================
+              FORMAÇÃO & CERTIFICAÇÕES
+          ========================================== */}
+          <section id="formacao" className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
+            
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+              
+              {/* Formação Acadêmica */}
+              <div>
+                <span className="text-xs uppercase tracking-widest text-emerald-400 font-mono font-semibold">Base Acadêmica</span>
+                <h2 className="text-2xl sm:text-3xl font-extrabold text-white mt-2 mb-6">
+                  <GradientText colors={["#ffffff", "#10b981"]}>Formação Acadêmica</GradientText>
+                </h2>
+
+                <div className="space-y-4">
+                  <SpotlightCard className="p-6">
+                    <div className="flex items-start gap-4">
+                      <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-2xl shrink-0">
+                        🎓
+                      </div>
+                      <div>
+                        <span className="text-xs font-mono text-emerald-400 font-semibold">Fev 2023 — Dez 2026 (Em curso)</span>
+                        <h3 className="text-lg font-bold text-white mt-0.5">Bacharelado em Sistemas de Informação</h3>
+                        <p className="text-sm font-semibold text-slate-300">Anhanguera Educacional</p>
+                        <p className="text-xs text-slate-400 mt-2 leading-relaxed">
+                          Foco em arquitetura de software, programação orientada a objetos (Java), banco de dados relacionais e engenharia de requisitos.
+                        </p>
+                      </div>
+                    </div>
+                  </SpotlightCard>
+
+                  <SpotlightCard className="p-6">
+                    <div className="flex items-start gap-4">
+                      <div className="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-2xl shrink-0">
+                        🏛️
+                      </div>
+                      <div>
+                        <span className="text-xs font-mono text-cyan-400 font-semibold">Jan 2020 — Fev 2022 (Concluído)</span>
+                        <h3 className="text-lg font-bold text-white mt-0.5">Ensino Técnico em Informática para Internet</h3>
+                        <p className="text-sm font-semibold text-slate-300">Centro Federal de Educação Tecnológica de Minas Gerais (CEFET-MG)</p>
+                        <p className="text-xs text-slate-400 mt-2 leading-relaxed">
+                          Formação técnica de excelência em lógica estruturada, desenvolvimento frontend e backend, redes de computadores e TCC prático.
+                        </p>
+                      </div>
+                    </div>
+                  </SpotlightCard>
+                </div>
+              </div>
+
+              {/* Certificações */}
+              <div>
+                <span className="text-xs uppercase tracking-widest text-cyan-400 font-mono font-semibold">Cursos & Certificados</span>
+                <h2 className="text-2xl sm:text-3xl font-extrabold text-white mt-2 mb-6">
+                  <GradientText colors={["#06b6d4", "#a855f7"]}>Certificações Oficiais</GradientText>
+                </h2>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {certifications.map((cert, idx) => (
+                    <SpotlightCard key={idx} className="p-4 flex flex-col justify-between">
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-xl">{cert.icon}</span>
+                          <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-white/[0.04] text-slate-400">
+                            {cert.date}
+                          </span>
+                        </div>
+                        <h4 className="text-sm font-bold text-white leading-snug">{cert.title}</h4>
+                        <p className="text-xs text-slate-400 mt-1">{cert.issuer}</p>
+                      </div>
+                    </SpotlightCard>
+                  ))}
+                </div>
+              </div>
+
+            </div>
+
+          </section>
+
+          {/* ==========================================
+              SEÇÃO ESPECIAL PARA APRESENTAÇÃO: REACTBITS
+          ========================================== */}
+          <section id="componentes-reactbits" className="max-w-6xl mx-auto px-4 sm:px-6 py-16 sm:py-24 border-t border-white/[0.06]">
+            
+            <div className="text-center mb-12">
+              <span className="text-xs uppercase tracking-widest text-emerald-400 font-mono font-semibold">Apresentação Acadêmica</span>
+              <h2 className="text-3xl sm:text-4xl font-extrabold text-white mt-2">
+                <GradientText colors={["#10b981", "#06b6d4", "#8b5cf6", "#10b981"]}>
+                  Componentes ReactBits Utilizados
+                </GradientText>
+              </h2>
+              <p className="text-slate-300 text-sm max-w-2xl mx-auto mt-3">
+                Este site foi desenvolvido incorporando os componentes oficiais do ecossistema <a href="https://reactbits.dev/" target="_blank" rel="noreferrer" className="text-emerald-400 underline font-semibold">ReactBits.dev</a>. Veja abaixo a lista completa e o papel técnico de cada um na arquitetura do portfólio.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+              
+              {/* 1. SplitText */}
+              <SpotlightCard className="p-6 border-emerald-500/20">
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-mono font-bold text-lg mb-4">
+                  01
+                </div>
+                <h3 className="text-lg font-bold text-white">SplitText</h3>
+                <span className="text-xs font-mono text-emerald-400 block mb-2">Categoria: Text Animations</span>
+                <p className="text-xs text-slate-300 leading-relaxed mb-4">
+                  Divide uma string de texto em caracteres individuais envolvidos em elementos animados com atraso progressivo (stagger), criando uma entrada cinematográfica na Hero Section.
+                </p>
+                <div className="p-2.5 rounded-lg bg-black/40 border border-white/[0.05] font-mono text-[11px] text-emerald-300">
+                  Aplicado em: Título principal "Deyvison Dênnis"
+                </div>
+              </SpotlightCard>
+
+              {/* 2. BlurText */}
+              <SpotlightCard className="p-6 border-cyan-500/20">
+                <div className="w-10 h-10 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-mono font-bold text-lg mb-4">
+                  02
+                </div>
+                <h3 className="text-lg font-bold text-white">BlurText</h3>
+                <span className="text-xs font-mono text-cyan-400 block mb-2">Categoria: Text Animations</span>
+                <p className="text-xs text-slate-300 leading-relaxed mb-4">
+                  Transiciona o texto gradualmente de um estado de desfoque (blur filter) para foco nítido ao entrar na viewport através de IntersectionObserver.
+                </p>
+                <div className="p-2.5 rounded-lg bg-black/40 border border-white/[0.05] font-mono text-[11px] text-cyan-300">
+                  Aplicado em: Parágrafo de apresentação da Hero
+                </div>
+              </SpotlightCard>
+
+              {/* 3. ShinyText */}
+              <SpotlightCard className="p-6 border-purple-500/20">
+                <div className="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center font-mono font-bold text-lg mb-4">
+                  03
+                </div>
+                <h3 className="text-lg font-bold text-white">ShinyText</h3>
+                <span className="text-xs font-mono text-purple-400 block mb-2">Categoria: Text Animations</span>
+                <p className="text-xs text-slate-300 leading-relaxed mb-4">
+                  Gera um reflexo metálico brilhante que percorre continuamente o texto através de máscara gradiente e animação de background-position.
+                </p>
+                <div className="p-2.5 rounded-lg bg-black/40 border border-white/[0.05] font-mono text-[11px] text-purple-300">
+                  Aplicado em: Badge de disponibilidade para trabalho
+                </div>
+              </SpotlightCard>
+
+              {/* 4. GradientText */}
+              <SpotlightCard className="p-6 border-emerald-500/20">
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-mono font-bold text-lg mb-4">
+                  04
+                </div>
+                <h3 className="text-lg font-bold text-white">GradientText</h3>
+                <span className="text-xs font-mono text-emerald-400 block mb-2">Categoria: Text Animations</span>
+                <p className="text-xs text-slate-300 leading-relaxed mb-4">
+                  Aplica um degradê multicolorido dinâmico sobre a tipografia, com animação fluida de ciclo de cores personalizável por paleta de cores CSS.
+                </p>
+                <div className="p-2.5 rounded-lg bg-black/40 border border-white/[0.05] font-mono text-[11px] text-emerald-300">
+                  Aplicado em: Todos os títulos principais de seções
+                </div>
+              </SpotlightCard>
+
+              {/* 5. RotatingText */}
+              <SpotlightCard className="p-6 border-cyan-500/20">
+                <div className="w-10 h-10 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-mono font-bold text-lg mb-4">
+                  05
+                </div>
+                <h3 className="text-lg font-bold text-white">RotatingText</h3>
+                <span className="text-xs font-mono text-cyan-400 block mb-2">Categoria: Text Animations</span>
+                <p className="text-xs text-slate-300 leading-relaxed mb-4">
+                  Alterna ciclicamente entre uma lista de palavras ou frases com transições suaves de escala, opacidade e translação vertical temporizada.
+                </p>
+                <div className="p-2.5 rounded-lg bg-black/40 border border-white/[0.05] font-mono text-[11px] text-cyan-300">
+                  Aplicado em: Rotação de especialidades na Hero
+                </div>
+              </SpotlightCard>
+
+              {/* 6. CountUp */}
+              <SpotlightCard className="p-6 border-purple-500/20">
+                <div className="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center font-mono font-bold text-lg mb-4">
+                  06
+                </div>
+                <h3 className="text-lg font-bold text-white">CountUp</h3>
+                <span className="text-xs font-mono text-purple-400 block mb-2">Categoria: Text Animations</span>
+                <p className="text-xs text-slate-300 leading-relaxed mb-4">
+                  Contador numérico animado que interpola de 0 até o valor final desejado usando requestAnimationFrame e detecção de visibilidade no scroll.
+                </p>
+                <div className="p-2.5 rounded-lg bg-black/40 border border-white/[0.05] font-mono text-[11px] text-purple-300">
+                  Aplicado em: Métricas (anos, repositórios, cursos)
+                </div>
+              </SpotlightCard>
+
+              {/* 7. SpotlightCard */}
+              <SpotlightCard className="p-6 border-emerald-500/20">
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-mono font-bold text-lg mb-4">
+                  07
+                </div>
+                <h3 className="text-lg font-bold text-white">SpotlightCard</h3>
+                <span className="text-xs font-mono text-emerald-400 block mb-2">Categoria: Components</span>
+                <p className="text-xs text-slate-300 leading-relaxed mb-4">
+                  Container interativo que captura as coordenadas (X, Y) do mouse e projeta um foco de luz radial dinâmico que ilumina as bordas e a superfície.
+                </p>
+                <div className="p-2.5 rounded-lg bg-black/40 border border-white/[0.05] font-mono text-[11px] text-emerald-300">
+                  Aplicado em: Todos os cards de projetos e experiência
+                </div>
+              </SpotlightCard>
+
+              {/* 8. Particles Background */}
+              <SpotlightCard className="p-6 border-cyan-500/20">
+                <div className="w-10 h-10 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center font-mono font-bold text-lg mb-4">
+                  08
+                </div>
+                <h3 className="text-lg font-bold text-white">Particles</h3>
+                <span className="text-xs font-mono text-cyan-400 block mb-2">Categoria: Backgrounds</span>
+                <p className="text-xs text-slate-300 leading-relaxed mb-4">
+                  Renderizador Canvas HTML5 com nós de partículas interativos que flutuam no espaço vetorial, conectam-se por proximidade e reagem ao cursor do mouse.
+                </p>
+                <div className="p-2.5 rounded-lg bg-black/40 border border-white/[0.05] font-mono text-[11px] text-cyan-300">
+                  Aplicado em: Background vivo em toda a extensão da página
+                </div>
+              </SpotlightCard>
+
+            </div>
+
+          </section>
+
+          {/* ==========================================
+              CONTATO & FORMULÁRIO
+          ========================================== */}
+          <section id="contato" className="max-w-4xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
+            
+            <SpotlightCard className="p-8 sm:p-12 text-center border-emerald-500/30">
+              <span className="text-xs uppercase tracking-widest text-emerald-400 font-mono font-semibold">Vamos conversar?</span>
+              <h2 className="text-3xl sm:text-4xl font-extrabold text-white mt-2 mb-4">
+                <GradientText colors={["#ffffff", "#10b981", "#06b6d4"]}>Entre em Contato</GradientText>
+              </h2>
+              <p className="text-slate-300 max-w-xl mx-auto text-sm sm:text-base leading-relaxed mb-8">
+                Estou aberto para oportunidades profissionais, projetos freelance, consultoria em desenvolvimento web e novas conexões.
+              </p>
+
+              <div className="flex flex-wrap items-center justify-center gap-4 mb-8">
+                <Magnet strength={0.25}>
+                  <a
+                    href="https://www.linkedin.com/in/deyvison-d%C3%AAnnis-764a0420b/"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-6 py-3 rounded-xl bg-[#0a66c2] hover:bg-[#084e96] text-white font-semibold text-sm transition-all flex items-center gap-2 shadow-lg shadow-blue-900/30"
+                  >
+                    <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                    <span>Conectar no LinkedIn</span>
+                  </a>
+                </Magnet>
+
+                <Magnet strength={0.25}>
+                  <a
+                    href="https://github.com/DeyvisonDennis"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-6 py-3 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] border border-white/[0.1] text-white font-semibold text-sm transition-all flex items-center gap-2"
+                  >
+                    <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                    <span>Seguir no GitHub</span>
+                  </a>
+                </Magnet>
+              </div>
+
+              <div className="inline-flex items-center gap-2 text-xs font-mono text-slate-400 bg-black/40 px-4 py-2 rounded-lg border border-white/[0.04]">
+                <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+                <span>Divinópolis, Minas Gerais — Brasil</span>
+              </div>
+            </SpotlightCard>
+
+          </section>
+
+          {/* ==========================================
+              FOOTER
+          ========================================== */}
+          <footer className="border-t border-white/[0.06] bg-[#050706] py-10 px-4 sm:px-6">
+            <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400 font-mono">
+              <div className="flex items-center gap-2">
+                <span className="text-emerald-400 font-bold">DD</span>
+                <span>© {new Date().getFullYear()} Deyvison Dênnis. Todos os direitos reservados.</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+                <span className="text-emerald-400 font-semibold">Desenvolvido com ReactBits</span>
+              </div>
+            </div>
+          </footer>
+
+        </div>
+      );
+    }
+
+    // Render na DOM
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
